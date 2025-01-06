@@ -347,7 +347,8 @@ def tracked(
     include_package_inventory: bool = True,
     create_parents: bool = False,
     require_empty_directory: bool = False,
-    chain_records: bool = False
+    chain_records: bool = False,
+    char_limit: Optional[int] = 200
 ) -> Callable:
     """Store information about a function call to disc.
 
@@ -473,6 +474,9 @@ def tracked(
         If True, a pre-existing record file will have a new record appended to
         it within the same file. If False, a pre-existing record file will be
         overwritten.
+    char_limit: Optional[int]
+        Character limit above which the object will be replaced with a
+        placeholder string. Defaults to 200.
 
     Examples
     --------
@@ -777,7 +781,7 @@ def tracked(
                 'module': function.__module__,
                 'source_file': source_file,
                 'parameters': {
-                    k: _format_json(v, 200)
+                    k: _format_json(v, char_limit)
                     for k, v in bound_args.arguments.items()
                 }
             }
@@ -858,7 +862,7 @@ def tracked(
 
             # Record parameters that are actually used to call the function
             record['called_function']['altered_parameters'] = {
-                k: _format_json(v, 200)
+                k: _format_json(v, char_limit)
                 for k, v in bound_args.arguments.items()
             }
 
